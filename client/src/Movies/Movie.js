@@ -22,7 +22,7 @@ export default class Movie extends React.Component {
 
   fetchMovie = id => {
     axios
-      .get(`http://localhost:5000/api/movies/${this.id}`)
+      .get(`http://localhost:5000/api/movies/${id}`)
       .then(res => {
         console.log(res);
         this.setState({ movie: res.data });
@@ -45,11 +45,11 @@ export default class Movie extends React.Component {
     const handleDelete = e => {
       e.preventDefault();
       axios
-        .delete(`http://localhost:5000/api/movies/${this.id}`)
+        .delete(`http://localhost:5000/api/movies/${this.state.movie.id}`)
         .then(res => {
           console.log(res);
-          this.props.updateMovies(res.data);
-          this.props.history.push("/");
+          this.props.movies(res.data);
+          this.props.history.push("/movies");
         })
         .catch(err => {
           console.log("Movie Error", err);
@@ -58,15 +58,12 @@ export default class Movie extends React.Component {
 
     return (
       <div className="save-wrapper">
-        {console.log("state", this.state)}
         <MovieCard movie={this.state.movie} />
-        <div className="save-button" onClick={this.saveMovie}>
-          Save
-        </div>
+        <button onClick={this.saveMovie}>Save</button>
         <button
           className="button"
           onClick={() => {
-            this.props.history.push(`update-movies/${this.state.id}`);
+            this.props.history.push(`update-movies/${this.id}`);
           }}
         >
           Edit
