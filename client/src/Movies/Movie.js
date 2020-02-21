@@ -63,7 +63,7 @@ export default class Movie extends React.Component {
         <button
           className="button"
           onClick={() => {
-            this.props.history.push(`update-movies/${this.id}`);
+            this.props.history.push(`/update-movie/${this.state.movie.id}`);
           }}
         >
           Edit

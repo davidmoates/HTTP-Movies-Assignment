@@ -10,52 +10,49 @@ const initialMovie = {
 
 const UpdateMovies = props => {
   const [movie, setMovie] = useState(initialMovie);
-  const [error, setError] = useState("");
+
   useEffect(() => {
-    const movieToEdit = props.movies.find(
-      movie => `${movie.id}` === props.match.params.id
-    );
+    const editMovie = props.savedList.find(movie => {
+      return `${movie.id}` === props.match.params.id;
+    });
+    if (editMovie) {
+      setMovie(editMovie);
+    }
+  }, [props.savedList, props.match.params.id]);
 
-    if (movieToEdit) setMovie(movieToEdit);
-  }, [props.movies, props.match.params.id]);
-
-  const changeHandler = ev => {
-    ev.persist();
-    let value = ev.target.value;
-    if (ev.target.title === "metascore") {
+  const handleChange = e => {
+    e.persist();
+    let value = e.target.value;
+    if (e.target.name === "metascore") {
       value = parseInt(value, 10);
     }
-
     setMovie({
       ...movie,
-      [ev.target.title]: value
+      [e.target.name]: value
     });
   };
 
   const handleSubmit = e => {
     e.preventDefault();
-    setError("");
     axios
       .put(`http://localhost:5000/api/movies/${movie.id}`, movie)
       .then(res => {
         console.log(res);
-        props.UpdateMovies(res.data);
-        props.history.goBack();
+        props.movies(res.data);
+        props.history.push("/movies");
       })
       .catch(err => {
-        console.error(err);
-        setError(err.message);
+        console.error("UpdateMovies Error", err);
       });
   };
 
   return (
     <div>
-      <h2>Update Movie</h2>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
           name="title"
-          onChange={changeHandler}
+          onChange={handleChange}
           placeholder="title"
           value={movie.title}
         />
@@ -63,7 +60,7 @@ const UpdateMovies = props => {
         <input
           type="text"
           name="director"
-          onChange={changeHandler}
+          onChange={handleChange}
           placeholder="director"
           value={movie.director}
         />
@@ -71,7 +68,7 @@ const UpdateMovies = props => {
         <input
           type="number"
           name="metascore"
-          onChange={changeHandler}
+          onChange={handleChange}
           placeholder="metascore"
           value={movie.metascore}
         />
@@ -79,13 +76,12 @@ const UpdateMovies = props => {
         <input
           type="text"
           name="stars"
-          onChange={changeHandler}
+          onChange={handleChange}
           placeholder="stars"
           value={movie.stars}
         />
         <button className="button">Update</button>
       </form>
-      {error && <div style={{ color: "red" }}>{error}</div>}
     </div>
   );
 };
